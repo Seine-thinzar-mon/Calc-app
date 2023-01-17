@@ -16,54 +16,85 @@ class MathCalculator extends Component {
         }
     }
 
-    _handleBtnClick = (value, action, type) => {
-        switch (action) {
-            case "clear":
-                return this._handleClear();
-            case "plus-minus":
-                return this._handlePlusMinus();
-            case "divider":
-                return this._handleDivide();
-            case "delete":
-                return this._handleDelete();
-            case "multiplier":
-                return this._handleMultiply();
-            case "plus":
-                return this._handleAdd();
-            case "minus":
-                return this._handleSubstract();
-            case "ans":
-                return this._handleGetAns();
-            case null:
-                return this._handleSetOperand(value);
-            default:
-                return null;
+    _handleCheckInprogressOperation = (callback) => {
+        let temp = this.state.operation;
+        const last2Char = temp?.charAt(temp.length - 2)
+        const lastChar = temp?.charAt(temp.length - 1)
+
+        if (['+', '-', '*', '/'].includes(last2Char) && lastChar === " ") {
+            var substring = temp.slice(0, -3);
+            this.setState({
+                operation: substring
+            }, () => { return callback() })
+        } else {
+            return callback();
         }
+    }
+
+    _handleBtnClick = (value, action, type) => {
+        if (type === 'operator' && value !== '+/-') {
+            const callbackFunc = () => {
+                switch (action) {
+                    case "divider":
+                        return this._handleDivide();
+                    case "multiplier":
+                        return this._handleMultiply();
+                    case "plus":
+                        return this._handleAdd();
+                    case "minus":
+                        return this._handleSubstract();
+                    default:
+                        return null;
+                }
+            }
+            this._handleCheckInprogressOperation(callbackFunc)
+
+        } else {
+            switch (action) {
+                case "clear":
+                    return this._handleClear();
+                case "plus-minus":
+                    return this._handlePlusMinus();
+                case "delete":
+                    return this._handleDelete();
+                case "ans":
+                    return this._handleGetAns();
+                case null:
+                    return this._handleSetOperand(value);
+                default:
+                    return null;
+            }
+        }
+
     }
     _handleClear = () => {
         this.setState({
-            operation: 0,
+            operation: null,
             operandInput: 0
         })
     }
     _handlePlusMinus = () => {
-        this.setState({
-            operandInput: this.state.operandInput * (-1)
-        },()=> {
-            let split = this.state.operation?.split(" ");
-            if (split?.length > 0) {
-                split[split?.length - 1] = this.state.operandInput;
-                split.join(' ')
-            }
-    
+        if (this.state.operandInput !== 0) {
             this.setState({
-                operation: split ? split.join(' ') : this.state.operandInput
-            });
-        })
+                operandInput: this.state.operandInput * (-1)
+            }, () => {
+                // to replace with deciaml value
+                let split = this.state.operation?.split(" ");
+                if (split?.length > 0) {
+                    split[split?.length - 1] = this.state.operandInput;
+                    split.join(' ')
+                }
+
+                this.setState({
+                    operation: split ? split.join(' ') : this.state.operandInput
+                });
+            })
+        }
+
     }
     _handleDivide = () => {
         this.setState({
-            operation: this.state.operation + " / "
+            operation: (this.state.operation || 0) + " / "
         }, () => {
             this.setState({
                 operandInput: 0
@@ -72,6 +103,7 @@ class MathCalculator extends Component {
         })
     }
     _handleDelete = () => {
+
         const temp = this.state.operandInput.toString().slice(0, -1) || 0
         this.setState({
             operandInput: temp
@@ -80,7 +112,7 @@ class MathCalculator extends Component {
     }
     _handleMultiply = () => {
         this.setState({
-            operation: this.state.operation + " * "
+            operation: (this.state.operation || 0) + " * "
         }, () => {
             this.setState({
                 operandInput: 0
@@ -90,7 +122,7 @@ class MathCalculator extends Component {
     }
     _handleAdd = () => {
         this.setState({
-            operation: this.state.operation + " + "
+            operation: (this.state.operation || 0) + " + "
         }, () => {
             this.setState({
                 operandInput: 0
@@ -100,49 +132,65 @@ class MathCalculator extends Component {
     }
     _handleSubstract = () => {
         this.setState({
-            operation: this.state.operation + " - "
+            operation: (this.state.operation || 0) + " - "
         }, () => {
             this.setState({
                 operandInput: 0
             })
 
         })
+
     }
     _handleGetAns = () => {
         console.log(this.state.operation)
-        const ans = eval(this.state.operation)
-        const completeAction = this.state.operation + ` = ${ans}`;
-        const tempHistory = [...this.state.history];
-        tempHistory.push(completeAction);
-        this.setState({
-            history: tempHistory,
-            answer: ans,
-            operandInput: 0,
-            operation: null
-        }, () => {
-            this._handleSetOperand(ans)
-        })
+        if (this.state.operation !== null) {
+            const lastChar = this.state.operation?.charAt(this.state.operation.length - 1)
+            const operation = lastChar === " " ? this.state.operation + '0' : this.state.operation
+            const ans = eval(operation)
+            const completeAction = ans + ` = ${ans}`;
+            const tempHistory = [...this.state.history];
+            tempHistory.push(completeAction);
+            this.setState({
+                history: tempHistory,
+                answer: ans,
+                operandInput: 0,
+                operation: null
+            }, () => {
+                if (ans === 0) {
+                    this.setState({
+                        operandInput: 0
+                    })
+                } else {
+                    this._handleSetOperand(ans)
+                }
+            })
+        }
     }
     _handleSetOperand = (value) => {
-        const temp = this.state.operandInput === 0 ? '' + value
-            : ('' + this.state.operandInput + value)
-        let split = this.state.operation?.split(" ");
-        console.log('tepm', temp)
-        if (split?.length > 0) {
-            split[split?.length - 1] = temp;
-            split.join(' ')
+        if (value === '.' && String(this.state.operandInput).includes('.')) {
+            //terminate
+        } else {
+            const temp = (this.state.operandInput === 0 && value !== '.') ? '' + value
+                : ('' + this.state.operandInput + value)
+
+            // to replace decimal value
+            let split = this.state.operation?.split(" ");
+            if (split?.length > 0) {
+                split[split?.length - 1] = temp;
+                split.join(' ')
+            }
+
+            this.setState({
+                operandInput: temp,
+                operation: split ? split.join(' ') : temp
+            });
         }
 
-        this.setState({
-            operandInput: temp,
-            operation: split ? split.join(' ') : temp
-        });
     }
 
     render() {
         const { _handleBtnClick } = this;
         const { operandInput, answer, history } = this.state;
-        console.log('==========',this.state.operation)
         return (
             <Row
                 style={{ height: '100%' }}
@@ -162,7 +210,7 @@ class MathCalculator extends Component {
                                             answer !== null ? (`Ans = ${answer}`) : null
                                         }
                                     </Row>
-                                    <Row align={'bottom'} justify={'end'} style={{ height: '50%', padding: "5px 10px" }}>
+                                    <Row align={'bottom'} justify={'end'} style={{ height: '50%', padding: "5px 10px", overflow: 'hidden' }}>
                                         {operandInput}
                                     </Row>
                                 </Col>
