@@ -1,9 +1,9 @@
+import { Component } from "react";
+import { Button, Col, Popover, Row, Typography } from "antd";
 import { EnterOutlined } from "@ant-design/icons";
 import { ClockCircleOutlined } from "@ant-design/icons/lib/icons";
-import { Button, Col, Row } from "antd";
-import { Component } from "react";
 import { Colors } from "../Config/colors";
-
+const { Text } = Typography;
 
 class MathCalculator extends Component {
     constructor(props) {
@@ -142,12 +142,11 @@ class MathCalculator extends Component {
 
     }
     _handleGetAns = () => {
-        console.log(this.state.operation)
         if (this.state.operation !== null) {
             const lastChar = this.state.operation?.charAt(this.state.operation.length - 1)
             const operation = lastChar === " " ? this.state.operation + '0' : this.state.operation
             const ans = eval(operation)
-            const completeAction = ans + ` = ${ans}`;
+            const completeAction = operation + ` = ${ans}`;
             const tempHistory = [...this.state.history];
             tempHistory.push(completeAction);
             this.setState({
@@ -191,6 +190,28 @@ class MathCalculator extends Component {
     render() {
         const { _handleBtnClick } = this;
         const { operandInput, answer, history } = this.state;
+        const historyContent = (
+            <Row>
+                {
+                    history.length > 0 ?
+                        (history?.map((h, i) => {
+                            return (
+                                <Col
+                                    span={24}
+                                    key={i}
+                                    style={{ marginTop: '10px' }}
+                                >
+                                    <Text style={{ padding: 4, border: '1px solid gray', borderRadius: 5 }}>
+                                        {h}
+                                    </Text>
+                                </Col>
+                            )
+                        }))
+                        :
+                        <Col style={{ margin: 'auto' }}>No History!</Col>
+                }
+            </Row>
+        )
         return (
             <Row
                 style={{ height: '100%' }}
@@ -202,15 +223,41 @@ class MathCalculator extends Component {
                         <Col span={24} style={{ borderRadius: 5, minHeight: 80, background: '#DCDCDC' }}>
                             <Row style={{ height: '100%' }}>
                                 <Col style={{ padding: 10 }} span={2}>
-                                    <ClockCircleOutlined />
+                                    <Popover content={historyContent} title="History" placement="bottom" trigger="click">
+                                        <ClockCircleOutlined
+                                            style={{
+                                                cursor: 'pointer'
+                                            }}
+                                        />
+                                    </Popover>
                                 </Col>
                                 <Col span={22} style={{}}>
-                                    <Row align={'top'} justify={'end'} style={{ height: '50%', padding: "5px 10px" }}>
+                                    <Row
+                                        align={'top'}
+                                        justify={'end'}
+                                        style={{
+                                            height: '50%',
+                                            padding: "5px 10px",
+                                            fontSize: 16,
+                                            color: Colors['light'].secondaryTextColor
+                                        }}
+                                    >
                                         {
                                             answer !== null ? (`Ans = ${answer}`) : null
                                         }
                                     </Row>
-                                    <Row align={'bottom'} justify={'end'} style={{ height: '50%', padding: "5px 10px", overflow: 'hidden' }}>
+                                    <Row
+                                        align={'bottom'}
+                                        justify={'end'}
+                                        style={{
+                                            height: '50%',
+                                            padding: "5px 10px",
+                                            overflow: 'hidden',
+                                            fontSize: 20,
+                                            fontWeight: 'bold',
+                                            color: Colors['light'].textColor
+                                        }}
+                                    >
                                         {operandInput}
                                     </Row>
                                 </Col>

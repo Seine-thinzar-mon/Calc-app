@@ -6,6 +6,8 @@ export const Colors = {
         borderColor: '',
         mathsDeleteBtn: '',
         mathsClearBtn: '',
+        textColor: '',
+        secondaryTextColor: '',
     },
     light:{
         operator: '#346A92',
@@ -14,5 +16,7 @@ export const Colors = {
         borderColor: '#bbb',
         mathsDeleteBtn: '#346A92',
         mathsClearBtn: '#346A92',
+        textColor: '#4c4c4c',
+        secondaryTextColor: '#888',
     }
 }
