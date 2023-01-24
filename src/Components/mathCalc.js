@@ -191,7 +191,7 @@ class MathCalculator extends Component {
         const { _handleBtnClick } = this;
         const { operandInput, answer, history } = this.state;
         const historyContent = (
-            <Row>
+            <Row style={{ display: 'block', maxHeight: 200, overflow: 'auto' }}>
                 {
                     history.length > 0 ?
                         (history?.map((h, i) => {
@@ -218,7 +218,7 @@ class MathCalculator extends Component {
                 justify={'center'}
                 align={'middle'}
             >
-                <Col style={{ height: 318 }} xs={20} md={12} lg={9}>
+                <Col className="box-shadow" style={{ height: 338, borderRadius: 5 }} xs={20} md={12} lg={9}>
                     <Row style={{ padding: 3 }}>
                         <Col span={24} style={{ borderRadius: 5, minHeight: 80, background: '#DCDCDC' }}>
                             <Row style={{ height: '100%' }}>

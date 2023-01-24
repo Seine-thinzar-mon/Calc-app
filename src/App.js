@@ -11,7 +11,7 @@ function App() {
 
   return (
     <Layout style={{ height: '100vh' }}>
-      <Header style={{ height: 68, background: '#ECEBED' }}>
+      <Header style={{ background: '#ECEBED' }}>
         <Navbar />
       </Header>
       <Content style={{ padding: '0 30px' }}>

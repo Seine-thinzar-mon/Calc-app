@@ -8,6 +8,7 @@ export const Colors = {
         mathsClearBtn: '',
         textColor: '',
         secondaryTextColor: '',
+        headerTextColor: ''
     },
     light:{
         operator: '#346A92',
@@ -18,5 +19,6 @@ export const Colors = {
         mathsClearBtn: '#346A92',
         textColor: '#4c4c4c',
         secondaryTextColor: '#888',
+        headerTextColor: '#346A92'
     }
 }

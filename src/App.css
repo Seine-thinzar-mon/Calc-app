@@ -59,3 +59,8 @@
       transform:rotate(360deg); 
   } 
 }
+
+.box-shadow{
+  box-shadow: -5px -5px 9px rgba(255,255,255,0.9), 5px 5px 9px rgba(94,104,121,0.15);
+  padding: 10px;
+}
